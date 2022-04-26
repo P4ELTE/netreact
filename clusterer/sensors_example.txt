@@ -1,0 +1,6 @@
+a,c:
+ a > 12 v c < 20 &  c != 10 v a = 1
+b:
+ b between 20,60 & a > 12 v c < 20
+d,e:
+d = 10 v g > 60 &  e != 10 v f < 60

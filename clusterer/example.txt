@@ -1,0 +1,2 @@
+clusterer.py --input sensors_example.txt --output sensors_out --to_cp_code_data
+cp_generator.py --input sensors_out --output out_code

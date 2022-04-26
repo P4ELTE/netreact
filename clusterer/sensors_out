@@ -1,0 +1,13 @@
+independent cluster 1
+small cluster 1
+a > 12 v c < 20; conj_id:0; sensors:{'a', 'c'}
+c != 10 v a = 1; conj_id:0; sensors:{'a', 'c'}
+small cluster 2
+b between 20,60; conj_id:1; sensors:{'b'}
+independent cluster 2
+small cluster 1
+d = 10 v g > 60; conj_id:2; sensors:{'d', 'e'}
+e != 10 v f < 60; conj_id:2; sensors:{'d', 'e'}
+
+
+
