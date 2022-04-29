@@ -56,10 +56,37 @@ struct ingress_metadata_t {
 	bit<32> disj_map_1;
 	bit<32> upper_bound_1;
 
+	bit<32> conj_value_2;
+	bit<32> disj_value_2;
+	bit<32> disj_map_2;
+	bit<32> upper_bound_2;
+
+	bit<32> conj_value_3;
+	bit<32> disj_value_3;
+	bit<32> disj_map_3;
+	bit<32> upper_bound_3;
+
+	bit<32> conj_value_4;
+	bit<32> disj_value_4;
+	bit<32> disj_map_4;
+	bit<32> upper_bound_4;
+
 	bit<32> disj_op_1;
 	bool disj_1;
 	bit<32> toCheck_1;
 	bit<32> sensorValue_copy_1;
+	bit<32> disj_op_2;
+	bool disj_2;
+	bit<32> toCheck_2;
+	bit<32> sensorValue_copy_2;
+	bit<32> disj_op_3;
+	bool disj_3;
+	bit<32> toCheck_3;
+	bit<32> sensorValue_copy_3;
+	bit<32> disj_op_4;
+	bool disj_4;
+	bit<32> toCheck_4;
+	bit<32> sensorValue_copy_4;
 
 
 
@@ -169,12 +196,18 @@ control SwitchIngress(
 
 
 	Register<bit<32>,bit<32>>(SENSOR_COUNT*2) disj_map_register_1;
+	Register<bit<32>,bit<32>>(SENSOR_COUNT*2) disj_map_register_2;
+	Register<bit<32>,bit<32>>(SENSOR_COUNT*2) disj_map_register_3;
+	Register<bit<32>,bit<32>>(SENSOR_COUNT*2) disj_map_register_4;
 
 
 Hash<bit<32>>(HashAlgorithm_t.IDENTITY) identity_hash;
 
 	action copy1(){
 		ig_md.sensorValue_copy_1 = identity_hash.get(hdr.sensor.sensorValue);
+		ig_md.sensorValue_copy_2 = identity_hash.get(hdr.sensor.sensorValue);
+		ig_md.sensorValue_copy_3 = identity_hash.get(hdr.sensor.sensorValue);
+		ig_md.sensorValue_copy_4 = identity_hash.get(hdr.sensor.sensorValue);
 
 	}
 	
@@ -230,6 +263,51 @@ Hash<bit<32>>(HashAlgorithm_t.IDENTITY) identity_hash;
     };
 
 
+	RegisterAction<bit<32>,_,bit<32>>(disj_map_register_2) set_disj_map_2_register_false = {
+    void apply(inout bit<32> register_data,  out bit<32> result){
+            register_data = register_data & ig_md.disj_map_2;
+            result = register_data;
+        }
+    };
+
+	RegisterAction<bit<32>,_,bit<32>>(disj_map_register_2) set_disj_map_2_register_true = {
+    void apply(inout bit<32> register_data,  out bit<32> result){
+            register_data = register_data | ig_md.disj_map_2;
+            result = register_data;
+        }
+    };
+
+
+	RegisterAction<bit<32>,_,bit<32>>(disj_map_register_3) set_disj_map_3_register_false = {
+    void apply(inout bit<32> register_data,  out bit<32> result){
+            register_data = register_data & ig_md.disj_map_3;
+            result = register_data;
+        }
+    };
+
+	RegisterAction<bit<32>,_,bit<32>>(disj_map_register_3) set_disj_map_3_register_true = {
+    void apply(inout bit<32> register_data,  out bit<32> result){
+            register_data = register_data | ig_md.disj_map_3;
+            result = register_data;
+        }
+    };
+
+
+	RegisterAction<bit<32>,_,bit<32>>(disj_map_register_4) set_disj_map_4_register_false = {
+    void apply(inout bit<32> register_data,  out bit<32> result){
+            register_data = register_data & ig_md.disj_map_4;
+            result = register_data;
+        }
+    };
+
+	RegisterAction<bit<32>,_,bit<32>>(disj_map_register_4) set_disj_map_4_register_true = {
+    void apply(inout bit<32> register_data,  out bit<32> result){
+            register_data = register_data | ig_md.disj_map_4;
+            result = register_data;
+        }
+    };
+
+
 
 	
 	Lpf<bit<32>, bit<32>>(size=SENSOR_COUNT) lpf_1;
@@ -260,6 +338,72 @@ Hash<bit<32>>(HashAlgorithm_t.IDENTITY) identity_hash;
         const entries = {
             {0} : set_conj_value_1(3,100,2,0);
             {1} : set_conj_value_1(1,400,2,0);
+		}
+	}
+
+	action set_conj_value_2(bit<32> conj_v, bit<32> disj_v, bit<32> disj_op, bit<32> upper_bound){
+		ig_md.conj_value_2 = conj_v;
+        ig_md.disj_op_2 = disj_op;
+        ig_md.disj_value_2 = disj_v;
+		ig_md.upper_bound_2 = upper_bound;
+	}
+
+	table conj_table_2{
+    actions = {
+            set_conj_value_2;
+        }
+        key = {
+            hdr.sensor.sensorId: exact;
+        }
+        size = SENSOR_COUNT;
+        const default_action = set_conj_value_2(0,0,0,0);
+        const entries = {
+            {0} : set_conj_value_2(3,100,2,0);
+            {1} : set_conj_value_2(1,400,2,0);
+		}
+	}
+
+	action set_conj_value_3(bit<32> conj_v, bit<32> disj_v, bit<32> disj_op, bit<32> upper_bound){
+		ig_md.conj_value_3 = conj_v;
+        ig_md.disj_op_3 = disj_op;
+        ig_md.disj_value_3 = disj_v;
+		ig_md.upper_bound_3 = upper_bound;
+	}
+
+	table conj_table_3{
+    actions = {
+            set_conj_value_3;
+        }
+        key = {
+            hdr.sensor.sensorId: exact;
+        }
+        size = SENSOR_COUNT;
+        const default_action = set_conj_value_3(0,0,0,0);
+        const entries = {
+            {0} : set_conj_value_3(3,100,2,0);
+            {1} : set_conj_value_3(1,400,2,0);
+		}
+	}
+
+	action set_conj_value_4(bit<32> conj_v, bit<32> disj_v, bit<32> disj_op, bit<32> upper_bound){
+		ig_md.conj_value_4 = conj_v;
+        ig_md.disj_op_4 = disj_op;
+        ig_md.disj_value_4 = disj_v;
+		ig_md.upper_bound_4 = upper_bound;
+	}
+
+	table conj_table_4{
+    actions = {
+            set_conj_value_4;
+        }
+        key = {
+            hdr.sensor.sensorId: exact;
+        }
+        size = SENSOR_COUNT;
+        const default_action = set_conj_value_4(0,0,0,0);
+        const entries = {
+            {0} : set_conj_value_4(3,100,2,0);
+            {1} : set_conj_value_4(1,400,2,0);
 		}
 	}
 
@@ -300,6 +444,117 @@ Hash<bit<32>>(HashAlgorithm_t.IDENTITY) identity_hash;
             size = 1;
             const entries = {
                 {5} : subtraction_upper_1();
+            }
+        }
+    
+        action subtraction_2(){
+            ig_md.toCheck_2 = ig_md.disj_value_2 - ig_md.sensorValue_copy_2;
+        }
+    
+        table subtract_table_2{
+            actions = {
+                subtraction_2;
+            }
+            key = {
+                ig_md.disj_op_2: exact;
+            }
+            size = 4;
+            const entries = {
+                {1} : subtraction_2();
+                {2} : subtraction_2();
+                {3} : subtraction_2();
+                {4} : subtraction_2();
+            }
+        }
+
+		action subtraction_upper_2(){
+            ig_md.upper_bound_2 = ig_md.upper_bound_2 - ig_md.sensorValue_copy_2;
+        }
+		
+		table subtract_table_upper_2{
+            actions = {
+                subtraction_upper_2;
+            }
+            key = {
+                ig_md.disj_op_2: exact;
+            }
+            size = 1;
+            const entries = {
+                {5} : subtraction_upper_2();
+            }
+        }
+    
+        action subtraction_3(){
+            ig_md.toCheck_3 = ig_md.disj_value_3 - ig_md.sensorValue_copy_3;
+        }
+    
+        table subtract_table_3{
+            actions = {
+                subtraction_3;
+            }
+            key = {
+                ig_md.disj_op_3: exact;
+            }
+            size = 4;
+            const entries = {
+                {1} : subtraction_3();
+                {2} : subtraction_3();
+                {3} : subtraction_3();
+                {4} : subtraction_3();
+            }
+        }
+
+		action subtraction_upper_3(){
+            ig_md.upper_bound_3 = ig_md.upper_bound_3 - ig_md.sensorValue_copy_3;
+        }
+		
+		table subtract_table_upper_3{
+            actions = {
+                subtraction_upper_3;
+            }
+            key = {
+                ig_md.disj_op_3: exact;
+            }
+            size = 1;
+            const entries = {
+                {5} : subtraction_upper_3();
+            }
+        }
+    
+        action subtraction_4(){
+            ig_md.toCheck_4 = ig_md.disj_value_4 - ig_md.sensorValue_copy_4;
+        }
+    
+        table subtract_table_4{
+            actions = {
+                subtraction_4;
+            }
+            key = {
+                ig_md.disj_op_4: exact;
+            }
+            size = 4;
+            const entries = {
+                {1} : subtraction_4();
+                {2} : subtraction_4();
+                {3} : subtraction_4();
+                {4} : subtraction_4();
+            }
+        }
+
+		action subtraction_upper_4(){
+            ig_md.upper_bound_4 = ig_md.upper_bound_4 - ig_md.sensorValue_copy_4;
+        }
+		
+		table subtract_table_upper_4{
+            actions = {
+                subtraction_upper_4;
+            }
+            key = {
+                ig_md.disj_op_4: exact;
+            }
+            size = 1;
+            const entries = {
+                {5} : subtraction_upper_4();
             }
         }
     
@@ -392,6 +647,267 @@ Hash<bit<32>>(HashAlgorithm_t.IDENTITY) identity_hash;
             }
         }
     
+        action set_disj_2_true(){
+            ig_md.disj_2 = true;
+        }
+        
+        action set_disj_2_false(){
+            ig_md.disj_2 = false;
+        }
+
+        action and_disj_2(bool upper){
+            ig_md.disj_2 = upper;
+        }
+        
+        table eval_greater_disj_2{
+            actions = {
+                set_disj_2_true;
+                set_disj_2_false;
+            }
+            key = {
+                ig_md.toCheck_2 : ternary;
+            }
+            size = 2;
+            const default_action = set_disj_2_true;
+            const entries = {
+				0b0000000000000000000000000000000 &&& 0b11111111111111111111111111111111 : set_disj_2_false();
+                0b0000000000000000000000000000000 &&& 0b10000000000000000000000000000000 : set_disj_2_false();
+            }
+        }
+    
+        table eval_smaller_disj_2{
+            actions = {
+                set_disj_2_true;
+                set_disj_2_false;
+            }
+            key = {
+                ig_md.toCheck_2 : ternary;
+            }
+            size = 2;
+            const default_action = set_disj_2_false;
+            const entries = {
+				0b0000000000000000000000000000000 &&& 0b11111111111111111111111111111111 : set_disj_2_false();
+                0b1000000000000000000000000000000 &&& 0b10000000000000000000000000000000 : set_disj_2_true();
+            }
+        }
+    
+        table eval_equal_disj_2{
+            actions = {
+                set_disj_2_true;
+                set_disj_2_false;
+            }
+            key = {
+                ig_md.toCheck_2 : exact;
+            }
+            size = 1;
+            const default_action = set_disj_2_false;
+            const entries = {
+                0 : set_disj_2_true();
+            }
+        }
+    
+        table eval_not_equal_disj_2{
+            actions = {
+                set_disj_2_true;
+                set_disj_2_false;
+            }
+            key = {
+                ig_md.toCheck_2 : exact;
+            }
+            size = 1;
+            const default_action = set_disj_2_true;
+            const entries = {
+                0 : set_disj_2_false();
+            }
+        }
+
+        table eval_range_disj_2{
+            actions = {
+                and_disj_2;
+            }
+            key = {
+				ig_md.upper_bound_2 : ternary;
+            }
+            size = 1;
+            const entries = {
+                0b1000000000000000000000000000000 &&& 0b10000000000000000000000000000000 : and_disj_2(true);
+            }
+        }
+    
+        action set_disj_3_true(){
+            ig_md.disj_3 = true;
+        }
+        
+        action set_disj_3_false(){
+            ig_md.disj_3 = false;
+        }
+
+        action and_disj_3(bool upper){
+            ig_md.disj_3 = upper;
+        }
+        
+        table eval_greater_disj_3{
+            actions = {
+                set_disj_3_true;
+                set_disj_3_false;
+            }
+            key = {
+                ig_md.toCheck_3 : ternary;
+            }
+            size = 2;
+            const default_action = set_disj_3_true;
+            const entries = {
+				0b0000000000000000000000000000000 &&& 0b11111111111111111111111111111111 : set_disj_3_false();
+                0b0000000000000000000000000000000 &&& 0b10000000000000000000000000000000 : set_disj_3_false();
+            }
+        }
+    
+        table eval_smaller_disj_3{
+            actions = {
+                set_disj_3_true;
+                set_disj_3_false;
+            }
+            key = {
+                ig_md.toCheck_3 : ternary;
+            }
+            size = 2;
+            const default_action = set_disj_3_false;
+            const entries = {
+				0b0000000000000000000000000000000 &&& 0b11111111111111111111111111111111 : set_disj_3_false();
+                0b1000000000000000000000000000000 &&& 0b10000000000000000000000000000000 : set_disj_3_true();
+            }
+        }
+    
+        table eval_equal_disj_3{
+            actions = {
+                set_disj_3_true;
+                set_disj_3_false;
+            }
+            key = {
+                ig_md.toCheck_3 : exact;
+            }
+            size = 1;
+            const default_action = set_disj_3_false;
+            const entries = {
+                0 : set_disj_3_true();
+            }
+        }
+    
+        table eval_not_equal_disj_3{
+            actions = {
+                set_disj_3_true;
+                set_disj_3_false;
+            }
+            key = {
+                ig_md.toCheck_3 : exact;
+            }
+            size = 1;
+            const default_action = set_disj_3_true;
+            const entries = {
+                0 : set_disj_3_false();
+            }
+        }
+
+        table eval_range_disj_3{
+            actions = {
+                and_disj_3;
+            }
+            key = {
+				ig_md.upper_bound_3 : ternary;
+            }
+            size = 1;
+            const entries = {
+                0b1000000000000000000000000000000 &&& 0b10000000000000000000000000000000 : and_disj_3(true);
+            }
+        }
+    
+        action set_disj_4_true(){
+            ig_md.disj_4 = true;
+        }
+        
+        action set_disj_4_false(){
+            ig_md.disj_4 = false;
+        }
+
+        action and_disj_4(bool upper){
+            ig_md.disj_4 = upper;
+        }
+        
+        table eval_greater_disj_4{
+            actions = {
+                set_disj_4_true;
+                set_disj_4_false;
+            }
+            key = {
+                ig_md.toCheck_4 : ternary;
+            }
+            size = 2;
+            const default_action = set_disj_4_true;
+            const entries = {
+				0b0000000000000000000000000000000 &&& 0b11111111111111111111111111111111 : set_disj_4_false();
+                0b0000000000000000000000000000000 &&& 0b10000000000000000000000000000000 : set_disj_4_false();
+            }
+        }
+    
+        table eval_smaller_disj_4{
+            actions = {
+                set_disj_4_true;
+                set_disj_4_false;
+            }
+            key = {
+                ig_md.toCheck_4 : ternary;
+            }
+            size = 2;
+            const default_action = set_disj_4_false;
+            const entries = {
+				0b0000000000000000000000000000000 &&& 0b11111111111111111111111111111111 : set_disj_4_false();
+                0b1000000000000000000000000000000 &&& 0b10000000000000000000000000000000 : set_disj_4_true();
+            }
+        }
+    
+        table eval_equal_disj_4{
+            actions = {
+                set_disj_4_true;
+                set_disj_4_false;
+            }
+            key = {
+                ig_md.toCheck_4 : exact;
+            }
+            size = 1;
+            const default_action = set_disj_4_false;
+            const entries = {
+                0 : set_disj_4_true();
+            }
+        }
+    
+        table eval_not_equal_disj_4{
+            actions = {
+                set_disj_4_true;
+                set_disj_4_false;
+            }
+            key = {
+                ig_md.toCheck_4 : exact;
+            }
+            size = 1;
+            const default_action = set_disj_4_true;
+            const entries = {
+                0 : set_disj_4_false();
+            }
+        }
+
+        table eval_range_disj_4{
+            actions = {
+                and_disj_4;
+            }
+            key = {
+				ig_md.upper_bound_4 : ternary;
+            }
+            size = 1;
+            const entries = {
+                0b1000000000000000000000000000000 &&& 0b10000000000000000000000000000000 : and_disj_4(true);
+            }
+        }
+    
 	
 
 	action create_with_true_1(bit<32> bitstring){
@@ -410,73 +926,335 @@ Hash<bit<32>>(HashAlgorithm_t.IDENTITY) identity_hash;
 		key = {
 			ig_md.disj_1 : exact;
 			ig_md.conj_value_1 : exact;
+            hdr.sensor.sensorId : exact;
 		}
 		size = 64;
 		const entries = {
-			{true,0} : create_with_true_1(0b00000000000000000000000000000001);
-			{true,1} : create_with_true_1(0b00000000000000000000000000000010);
-			{true,2} : create_with_true_1(0b00000000000000000000000000000100);
-			{true,3} : create_with_true_1(0b00000000000000000000000000001000);
-			{true,4} : create_with_true_1(0b00000000000000000000000000010000);
-			{true,5} : create_with_true_1(0b00000000000000000000000000100000);
-			{true,6} : create_with_true_1(0b00000000000000000000000001000000);
-			{true,7} : create_with_true_1(0b00000000000000000000000010000000);
-			{true,8} : create_with_true_1(0b00000000000000000000000100000000);
-			{true,9} : create_with_true_1(0b00000000000000000000001000000000);
-			{true,10} : create_with_true_1(0b00000000000000000000010000000000);
-			{true,11} : create_with_true_1(0b00000000000000000000100000000000);
-			{true,12} : create_with_true_1(0b00000000000000000001000000000000);
-			{true,13} : create_with_true_1(0b00000000000000000010000000000000);
-			{true,14} : create_with_true_1(0b00000000000000000100000000000000);
-			{true,15} : create_with_true_1(0b00000000000000001000000000000000);
-			{true,16} : create_with_true_1(0b00000000000000010000000000000000);
-			{true,17} : create_with_true_1(0b00000000000000100000000000000000);
-			{true,18} : create_with_true_1(0b00000000000001000000000000000000);
-			{true,19} : create_with_true_1(0b00000000000010000000000000000000);
-			{true,20} : create_with_true_1(0b00000000000100000000000000000000);
-			{true,21} : create_with_true_1(0b00000000001000000000000000000000);
-			{true,22} : create_with_true_1(0b00000000010000000000000000000000);
-			{true,23} : create_with_true_1(0b00000000100000000000000000000000);
-			{true,24} : create_with_true_1(0b00000001000000000000000000000000);
-			{true,25} : create_with_true_1(0b00000010000000000000000000000000);
-			{true,26} : create_with_true_1(0b00000100000000000000000000000000);
-			{true,27} : create_with_true_1(0b00001000000000000000000000000000);
-			{true,28} : create_with_true_1(0b00010000000000000000000000000000);
-			{true,29} : create_with_true_1(0b00100000000000000000000000000000);
-			{true,30} : create_with_true_1(0b01000000000000000000000000000000);
-			{true,31} : create_with_true_1(0b10000000000000000000000000000000);
-			{false,0} : create_with_false_1(0b11111111111111111111111111111110);
-			{false,1} : create_with_false_1(0b11111111111111111111111111111101);
-			{false,2} : create_with_false_1(0b11111111111111111111111111111011);
-			{false,3} : create_with_false_1(0b11111111111111111111111111110111);
-			{false,4} : create_with_false_1(0b11111111111111111111111111101111);
-			{false,5} : create_with_false_1(0b11111111111111111111111111011111);
-			{false,6} : create_with_false_1(0b11111111111111111111111110111111);
-			{false,7} : create_with_false_1(0b11111111111111111111111101111111);
-			{false,8} : create_with_false_1(0b11111111111111111111111011111111);
-			{false,9} : create_with_false_1(0b11111111111111111111110111111111);
-			{false,10} : create_with_false_1(0b11111111111111111111101111111111);
-			{false,11} : create_with_false_1(0b11111111111111111111011111111111);
-			{false,12} : create_with_false_1(0b11111111111111111110111111111111);
-			{false,13} : create_with_false_1(0b11111111111111111101111111111111);
-			{false,14} : create_with_false_1(0b11111111111111111011111111111111);
-			{false,15} : create_with_false_1(0b11111111111111110111111111111111);
-			{false,16} : create_with_false_1(0b11111111111111101111111111111111);
-			{false,17} : create_with_false_1(0b11111111111111011111111111111111);
-			{false,18} : create_with_false_1(0b11111111111110111111111111111111);
-			{false,19} : create_with_false_1(0b11111111111101111111111111111111);
-			{false,20} : create_with_false_1(0b11111111111011111111111111111111);
-			{false,21} : create_with_false_1(0b11111111110111111111111111111111);
-			{false,22} : create_with_false_1(0b11111111101111111111111111111111);
-			{false,23} : create_with_false_1(0b11111111011111111111111111111111);
-			{false,24} : create_with_false_1(0b11111110111111111111111111111111);
-			{false,25} : create_with_false_1(0b11111101111111111111111111111111);
-			{false,26} : create_with_false_1(0b11111011111111111111111111111111);
-			{false,27} : create_with_false_1(0b11110111111111111111111111111111);
-			{false,28} : create_with_false_1(0b11101111111111111111111111111111);
-			{false,29} : create_with_false_1(0b11011111111111111111111111111111);
-			{false,30} : create_with_false_1(0b10111111111111111111111111111111);
-			{false,31} : create_with_false_1(0b01111111111111111111111111111111);
+			{true,0,1} : create_with_true_1(0b00000000000000000000000000000001);
+			{true,1,1} : create_with_true_1(0b00000000000000000000000000000010);
+			{true,2,1} : create_with_true_1(0b00000000000000000000000000000100);
+			{true,3,1} : create_with_true_1(0b00000000000000000000000000001000);
+			{true,4,1} : create_with_true_1(0b00000000000000000000000000010000);
+			{true,5,1} : create_with_true_1(0b00000000000000000000000000100000);
+			{true,6,1} : create_with_true_1(0b00000000000000000000000001000000);
+			{true,7,1} : create_with_true_1(0b00000000000000000000000010000000);
+			{true,8,1} : create_with_true_1(0b00000000000000000000000100000000);
+			{true,9,1} : create_with_true_1(0b00000000000000000000001000000000);
+			{true,10,1} : create_with_true_1(0b00000000000000000000010000000000);
+			{true,11,1} : create_with_true_1(0b00000000000000000000100000000000);
+			{true,12,1} : create_with_true_1(0b00000000000000000001000000000000);
+			{true,13,1} : create_with_true_1(0b00000000000000000010000000000000);
+			{true,14,1} : create_with_true_1(0b00000000000000000100000000000000);
+			{true,15,1} : create_with_true_1(0b00000000000000001000000000000000);
+			{true,16,1} : create_with_true_1(0b00000000000000010000000000000000);
+			{true,17,1} : create_with_true_1(0b00000000000000100000000000000000);
+			{true,18,1} : create_with_true_1(0b00000000000001000000000000000000);
+			{true,19,1} : create_with_true_1(0b00000000000010000000000000000000);
+			{true,20,1} : create_with_true_1(0b00000000000100000000000000000000);
+			{true,21,1} : create_with_true_1(0b00000000001000000000000000000000);
+			{true,22,1} : create_with_true_1(0b00000000010000000000000000000000);
+			{true,23,1} : create_with_true_1(0b00000000100000000000000000000000);
+			{true,24,1} : create_with_true_1(0b00000001000000000000000000000000);
+			{true,25,1} : create_with_true_1(0b00000010000000000000000000000000);
+			{true,26,1} : create_with_true_1(0b00000100000000000000000000000000);
+			{true,27,1} : create_with_true_1(0b00001000000000000000000000000000);
+			{true,28,1} : create_with_true_1(0b00010000000000000000000000000000);
+			{true,29,1} : create_with_true_1(0b00100000000000000000000000000000);
+			{true,30,1} : create_with_true_1(0b01000000000000000000000000000000);
+			{true,31,1} : create_with_true_1(0b10000000000000000000000000000000);
+			{false,0,1} : create_with_false_1(0b11111111111111111111111111111110);
+			{false,1,1} : create_with_false_1(0b11111111111111111111111111111101);
+			{false,2,1} : create_with_false_1(0b11111111111111111111111111111011);
+			{false,3,1} : create_with_false_1(0b11111111111111111111111111110111);
+			{false,4,1} : create_with_false_1(0b11111111111111111111111111101111);
+			{false,5,1} : create_with_false_1(0b11111111111111111111111111011111);
+			{false,6,1} : create_with_false_1(0b11111111111111111111111110111111);
+			{false,7,1} : create_with_false_1(0b11111111111111111111111101111111);
+			{false,8,1} : create_with_false_1(0b11111111111111111111111011111111);
+			{false,9,1} : create_with_false_1(0b11111111111111111111110111111111);
+			{false,10,1} : create_with_false_1(0b11111111111111111111101111111111);
+			{false,11,1} : create_with_false_1(0b11111111111111111111011111111111);
+			{false,12,1} : create_with_false_1(0b11111111111111111110111111111111);
+			{false,13,1} : create_with_false_1(0b11111111111111111101111111111111);
+			{false,14,1} : create_with_false_1(0b11111111111111111011111111111111);
+			{false,15,1} : create_with_false_1(0b11111111111111110111111111111111);
+			{false,16,1} : create_with_false_1(0b11111111111111101111111111111111);
+			{false,17,1} : create_with_false_1(0b11111111111111011111111111111111);
+			{false,18,1} : create_with_false_1(0b11111111111110111111111111111111);
+			{false,19,1} : create_with_false_1(0b11111111111101111111111111111111);
+			{false,20,1} : create_with_false_1(0b11111111111011111111111111111111);
+			{false,21,1} : create_with_false_1(0b11111111110111111111111111111111);
+			{false,22,1} : create_with_false_1(0b11111111101111111111111111111111);
+			{false,23,1} : create_with_false_1(0b11111111011111111111111111111111);
+			{false,24,1} : create_with_false_1(0b11111110111111111111111111111111);
+			{false,25,1} : create_with_false_1(0b11111101111111111111111111111111);
+			{false,26,1} : create_with_false_1(0b11111011111111111111111111111111);
+			{false,27,1} : create_with_false_1(0b11110111111111111111111111111111);
+			{false,28,1} : create_with_false_1(0b11101111111111111111111111111111);
+			{false,29,1} : create_with_false_1(0b11011111111111111111111111111111);
+			{false,30,1} : create_with_false_1(0b10111111111111111111111111111111);
+			{false,31,1} : create_with_false_1(0b01111111111111111111111111111111);
+		}
+	}
+
+	action create_with_true_2(bit<32> bitstring){
+		ig_md.disj_map_2 = bitstring | ig_md.disj_map_2;
+	}
+	
+	action create_with_false_2(bit<32> bitstring){
+		ig_md.disj_map_2 = bitstring & ig_md.disj_map_2;
+	}
+
+	table create_new_map_2{
+		actions = {
+			create_with_false_2;
+			create_with_true_2;
+		}
+		key = {
+			ig_md.disj_2 : exact;
+			ig_md.conj_value_2 : exact;
+            hdr.sensor.sensorId : exact;
+		}
+		size = 64;
+		const entries = {
+			{true,0,1} : create_with_true_2(0b00000000000000000000000000000001);
+			{true,1,1} : create_with_true_2(0b00000000000000000000000000000010);
+			{true,2,1} : create_with_true_2(0b00000000000000000000000000000100);
+			{true,3,1} : create_with_true_2(0b00000000000000000000000000001000);
+			{true,4,1} : create_with_true_2(0b00000000000000000000000000010000);
+			{true,5,1} : create_with_true_2(0b00000000000000000000000000100000);
+			{true,6,1} : create_with_true_2(0b00000000000000000000000001000000);
+			{true,7,1} : create_with_true_2(0b00000000000000000000000010000000);
+			{true,8,1} : create_with_true_2(0b00000000000000000000000100000000);
+			{true,9,1} : create_with_true_2(0b00000000000000000000001000000000);
+			{true,10,1} : create_with_true_2(0b00000000000000000000010000000000);
+			{true,11,1} : create_with_true_2(0b00000000000000000000100000000000);
+			{true,12,1} : create_with_true_2(0b00000000000000000001000000000000);
+			{true,13,1} : create_with_true_2(0b00000000000000000010000000000000);
+			{true,14,1} : create_with_true_2(0b00000000000000000100000000000000);
+			{true,15,1} : create_with_true_2(0b00000000000000001000000000000000);
+			{true,16,1} : create_with_true_2(0b00000000000000010000000000000000);
+			{true,17,1} : create_with_true_2(0b00000000000000100000000000000000);
+			{true,18,1} : create_with_true_2(0b00000000000001000000000000000000);
+			{true,19,1} : create_with_true_2(0b00000000000010000000000000000000);
+			{true,20,1} : create_with_true_2(0b00000000000100000000000000000000);
+			{true,21,1} : create_with_true_2(0b00000000001000000000000000000000);
+			{true,22,1} : create_with_true_2(0b00000000010000000000000000000000);
+			{true,23,1} : create_with_true_2(0b00000000100000000000000000000000);
+			{true,24,1} : create_with_true_2(0b00000001000000000000000000000000);
+			{true,25,1} : create_with_true_2(0b00000010000000000000000000000000);
+			{true,26,1} : create_with_true_2(0b00000100000000000000000000000000);
+			{true,27,1} : create_with_true_2(0b00001000000000000000000000000000);
+			{true,28,1} : create_with_true_2(0b00010000000000000000000000000000);
+			{true,29,1} : create_with_true_2(0b00100000000000000000000000000000);
+			{true,30,1} : create_with_true_2(0b01000000000000000000000000000000);
+			{true,31,1} : create_with_true_2(0b10000000000000000000000000000000);
+			{false,0,1} : create_with_false_2(0b11111111111111111111111111111110);
+			{false,1,1} : create_with_false_2(0b11111111111111111111111111111101);
+			{false,2,1} : create_with_false_2(0b11111111111111111111111111111011);
+			{false,3,1} : create_with_false_2(0b11111111111111111111111111110111);
+			{false,4,1} : create_with_false_2(0b11111111111111111111111111101111);
+			{false,5,1} : create_with_false_2(0b11111111111111111111111111011111);
+			{false,6,1} : create_with_false_2(0b11111111111111111111111110111111);
+			{false,7,1} : create_with_false_2(0b11111111111111111111111101111111);
+			{false,8,1} : create_with_false_2(0b11111111111111111111111011111111);
+			{false,9,1} : create_with_false_2(0b11111111111111111111110111111111);
+			{false,10,1} : create_with_false_2(0b11111111111111111111101111111111);
+			{false,11,1} : create_with_false_2(0b11111111111111111111011111111111);
+			{false,12,1} : create_with_false_2(0b11111111111111111110111111111111);
+			{false,13,1} : create_with_false_2(0b11111111111111111101111111111111);
+			{false,14,1} : create_with_false_2(0b11111111111111111011111111111111);
+			{false,15,1} : create_with_false_2(0b11111111111111110111111111111111);
+			{false,16,1} : create_with_false_2(0b11111111111111101111111111111111);
+			{false,17,1} : create_with_false_2(0b11111111111111011111111111111111);
+			{false,18,1} : create_with_false_2(0b11111111111110111111111111111111);
+			{false,19,1} : create_with_false_2(0b11111111111101111111111111111111);
+			{false,20,1} : create_with_false_2(0b11111111111011111111111111111111);
+			{false,21,1} : create_with_false_2(0b11111111110111111111111111111111);
+			{false,22,1} : create_with_false_2(0b11111111101111111111111111111111);
+			{false,23,1} : create_with_false_2(0b11111111011111111111111111111111);
+			{false,24,1} : create_with_false_2(0b11111110111111111111111111111111);
+			{false,25,1} : create_with_false_2(0b11111101111111111111111111111111);
+			{false,26,1} : create_with_false_2(0b11111011111111111111111111111111);
+			{false,27,1} : create_with_false_2(0b11110111111111111111111111111111);
+			{false,28,1} : create_with_false_2(0b11101111111111111111111111111111);
+			{false,29,1} : create_with_false_2(0b11011111111111111111111111111111);
+			{false,30,1} : create_with_false_2(0b10111111111111111111111111111111);
+			{false,31,1} : create_with_false_2(0b01111111111111111111111111111111);
+		}
+	}
+
+	action create_with_true_3(bit<32> bitstring){
+		ig_md.disj_map_3 = bitstring | ig_md.disj_map_3;
+	}
+	
+	action create_with_false_3(bit<32> bitstring){
+		ig_md.disj_map_3 = bitstring & ig_md.disj_map_3;
+	}
+
+	table create_new_map_3{
+		actions = {
+			create_with_false_3;
+			create_with_true_3;
+		}
+		key = {
+			ig_md.disj_3 : exact;
+			ig_md.conj_value_3 : exact;
+            hdr.sensor.sensorId : exact;
+		}
+		size = 64;
+		const entries = {
+			{true,0,1} : create_with_true_3(0b00000000000000000000000000000001);
+			{true,1,1} : create_with_true_3(0b00000000000000000000000000000010);
+			{true,2,1} : create_with_true_3(0b00000000000000000000000000000100);
+			{true,3,1} : create_with_true_3(0b00000000000000000000000000001000);
+			{true,4,1} : create_with_true_3(0b00000000000000000000000000010000);
+			{true,5,1} : create_with_true_3(0b00000000000000000000000000100000);
+			{true,6,1} : create_with_true_3(0b00000000000000000000000001000000);
+			{true,7,1} : create_with_true_3(0b00000000000000000000000010000000);
+			{true,8,1} : create_with_true_3(0b00000000000000000000000100000000);
+			{true,9,1} : create_with_true_3(0b00000000000000000000001000000000);
+			{true,10,1} : create_with_true_3(0b00000000000000000000010000000000);
+			{true,11,1} : create_with_true_3(0b00000000000000000000100000000000);
+			{true,12,1} : create_with_true_3(0b00000000000000000001000000000000);
+			{true,13,1} : create_with_true_3(0b00000000000000000010000000000000);
+			{true,14,1} : create_with_true_3(0b00000000000000000100000000000000);
+			{true,15,1} : create_with_true_3(0b00000000000000001000000000000000);
+			{true,16,1} : create_with_true_3(0b00000000000000010000000000000000);
+			{true,17,1} : create_with_true_3(0b00000000000000100000000000000000);
+			{true,18,1} : create_with_true_3(0b00000000000001000000000000000000);
+			{true,19,1} : create_with_true_3(0b00000000000010000000000000000000);
+			{true,20,1} : create_with_true_3(0b00000000000100000000000000000000);
+			{true,21,1} : create_with_true_3(0b00000000001000000000000000000000);
+			{true,22,1} : create_with_true_3(0b00000000010000000000000000000000);
+			{true,23,1} : create_with_true_3(0b00000000100000000000000000000000);
+			{true,24,1} : create_with_true_3(0b00000001000000000000000000000000);
+			{true,25,1} : create_with_true_3(0b00000010000000000000000000000000);
+			{true,26,1} : create_with_true_3(0b00000100000000000000000000000000);
+			{true,27,1} : create_with_true_3(0b00001000000000000000000000000000);
+			{true,28,1} : create_with_true_3(0b00010000000000000000000000000000);
+			{true,29,1} : create_with_true_3(0b00100000000000000000000000000000);
+			{true,30,1} : create_with_true_3(0b01000000000000000000000000000000);
+			{true,31,1} : create_with_true_3(0b10000000000000000000000000000000);
+			{false,0,1} : create_with_false_3(0b11111111111111111111111111111110);
+			{false,1,1} : create_with_false_3(0b11111111111111111111111111111101);
+			{false,2,1} : create_with_false_3(0b11111111111111111111111111111011);
+			{false,3,1} : create_with_false_3(0b11111111111111111111111111110111);
+			{false,4,1} : create_with_false_3(0b11111111111111111111111111101111);
+			{false,5,1} : create_with_false_3(0b11111111111111111111111111011111);
+			{false,6,1} : create_with_false_3(0b11111111111111111111111110111111);
+			{false,7,1} : create_with_false_3(0b11111111111111111111111101111111);
+			{false,8,1} : create_with_false_3(0b11111111111111111111111011111111);
+			{false,9,1} : create_with_false_3(0b11111111111111111111110111111111);
+			{false,10,1} : create_with_false_3(0b11111111111111111111101111111111);
+			{false,11,1} : create_with_false_3(0b11111111111111111111011111111111);
+			{false,12,1} : create_with_false_3(0b11111111111111111110111111111111);
+			{false,13,1} : create_with_false_3(0b11111111111111111101111111111111);
+			{false,14,1} : create_with_false_3(0b11111111111111111011111111111111);
+			{false,15,1} : create_with_false_3(0b11111111111111110111111111111111);
+			{false,16,1} : create_with_false_3(0b11111111111111101111111111111111);
+			{false,17,1} : create_with_false_3(0b11111111111111011111111111111111);
+			{false,18,1} : create_with_false_3(0b11111111111110111111111111111111);
+			{false,19,1} : create_with_false_3(0b11111111111101111111111111111111);
+			{false,20,1} : create_with_false_3(0b11111111111011111111111111111111);
+			{false,21,1} : create_with_false_3(0b11111111110111111111111111111111);
+			{false,22,1} : create_with_false_3(0b11111111101111111111111111111111);
+			{false,23,1} : create_with_false_3(0b11111111011111111111111111111111);
+			{false,24,1} : create_with_false_3(0b11111110111111111111111111111111);
+			{false,25,1} : create_with_false_3(0b11111101111111111111111111111111);
+			{false,26,1} : create_with_false_3(0b11111011111111111111111111111111);
+			{false,27,1} : create_with_false_3(0b11110111111111111111111111111111);
+			{false,28,1} : create_with_false_3(0b11101111111111111111111111111111);
+			{false,29,1} : create_with_false_3(0b11011111111111111111111111111111);
+			{false,30,1} : create_with_false_3(0b10111111111111111111111111111111);
+			{false,31,1} : create_with_false_3(0b01111111111111111111111111111111);
+		}
+	}
+
+	action create_with_true_4(bit<32> bitstring){
+		ig_md.disj_map_4 = bitstring | ig_md.disj_map_4;
+	}
+	
+	action create_with_false_4(bit<32> bitstring){
+		ig_md.disj_map_4 = bitstring & ig_md.disj_map_4;
+	}
+
+	table create_new_map_4{
+		actions = {
+			create_with_false_4;
+			create_with_true_4;
+		}
+		key = {
+			ig_md.disj_4 : exact;
+			ig_md.conj_value_4 : exact;
+            hdr.sensor.sensorId : exact;
+		}
+		size = 64;
+		const entries = {
+			{true,0,1} : create_with_true_4(0b00000000000000000000000000000001);
+			{true,1,1} : create_with_true_4(0b00000000000000000000000000000010);
+			{true,2,1} : create_with_true_4(0b00000000000000000000000000000100);
+			{true,3,1} : create_with_true_4(0b00000000000000000000000000001000);
+			{true,4,1} : create_with_true_4(0b00000000000000000000000000010000);
+			{true,5,1} : create_with_true_4(0b00000000000000000000000000100000);
+			{true,6,1} : create_with_true_4(0b00000000000000000000000001000000);
+			{true,7,1} : create_with_true_4(0b00000000000000000000000010000000);
+			{true,8,1} : create_with_true_4(0b00000000000000000000000100000000);
+			{true,9,1} : create_with_true_4(0b00000000000000000000001000000000);
+			{true,10,1} : create_with_true_4(0b00000000000000000000010000000000);
+			{true,11,1} : create_with_true_4(0b00000000000000000000100000000000);
+			{true,12,1} : create_with_true_4(0b00000000000000000001000000000000);
+			{true,13,1} : create_with_true_4(0b00000000000000000010000000000000);
+			{true,14,1} : create_with_true_4(0b00000000000000000100000000000000);
+			{true,15,1} : create_with_true_4(0b00000000000000001000000000000000);
+			{true,16,1} : create_with_true_4(0b00000000000000010000000000000000);
+			{true,17,1} : create_with_true_4(0b00000000000000100000000000000000);
+			{true,18,1} : create_with_true_4(0b00000000000001000000000000000000);
+			{true,19,1} : create_with_true_4(0b00000000000010000000000000000000);
+			{true,20,1} : create_with_true_4(0b00000000000100000000000000000000);
+			{true,21,1} : create_with_true_4(0b00000000001000000000000000000000);
+			{true,22,1} : create_with_true_4(0b00000000010000000000000000000000);
+			{true,23,1} : create_with_true_4(0b00000000100000000000000000000000);
+			{true,24,1} : create_with_true_4(0b00000001000000000000000000000000);
+			{true,25,1} : create_with_true_4(0b00000010000000000000000000000000);
+			{true,26,1} : create_with_true_4(0b00000100000000000000000000000000);
+			{true,27,1} : create_with_true_4(0b00001000000000000000000000000000);
+			{true,28,1} : create_with_true_4(0b00010000000000000000000000000000);
+			{true,29,1} : create_with_true_4(0b00100000000000000000000000000000);
+			{true,30,1} : create_with_true_4(0b01000000000000000000000000000000);
+			{true,31,1} : create_with_true_4(0b10000000000000000000000000000000);
+			{false,0,1} : create_with_false_4(0b11111111111111111111111111111110);
+			{false,1,1} : create_with_false_4(0b11111111111111111111111111111101);
+			{false,2,1} : create_with_false_4(0b11111111111111111111111111111011);
+			{false,3,1} : create_with_false_4(0b11111111111111111111111111110111);
+			{false,4,1} : create_with_false_4(0b11111111111111111111111111101111);
+			{false,5,1} : create_with_false_4(0b11111111111111111111111111011111);
+			{false,6,1} : create_with_false_4(0b11111111111111111111111110111111);
+			{false,7,1} : create_with_false_4(0b11111111111111111111111101111111);
+			{false,8,1} : create_with_false_4(0b11111111111111111111111011111111);
+			{false,9,1} : create_with_false_4(0b11111111111111111111110111111111);
+			{false,10,1} : create_with_false_4(0b11111111111111111111101111111111);
+			{false,11,1} : create_with_false_4(0b11111111111111111111011111111111);
+			{false,12,1} : create_with_false_4(0b11111111111111111110111111111111);
+			{false,13,1} : create_with_false_4(0b11111111111111111101111111111111);
+			{false,14,1} : create_with_false_4(0b11111111111111111011111111111111);
+			{false,15,1} : create_with_false_4(0b11111111111111110111111111111111);
+			{false,16,1} : create_with_false_4(0b11111111111111101111111111111111);
+			{false,17,1} : create_with_false_4(0b11111111111111011111111111111111);
+			{false,18,1} : create_with_false_4(0b11111111111110111111111111111111);
+			{false,19,1} : create_with_false_4(0b11111111111101111111111111111111);
+			{false,20,1} : create_with_false_4(0b11111111111011111111111111111111);
+			{false,21,1} : create_with_false_4(0b11111111110111111111111111111111);
+			{false,22,1} : create_with_false_4(0b11111111101111111111111111111111);
+			{false,23,1} : create_with_false_4(0b11111111011111111111111111111111);
+			{false,24,1} : create_with_false_4(0b11111110111111111111111111111111);
+			{false,25,1} : create_with_false_4(0b11111101111111111111111111111111);
+			{false,26,1} : create_with_false_4(0b11111011111111111111111111111111);
+			{false,27,1} : create_with_false_4(0b11110111111111111111111111111111);
+			{false,28,1} : create_with_false_4(0b11101111111111111111111111111111);
+			{false,29,1} : create_with_false_4(0b11011111111111111111111111111111);
+			{false,30,1} : create_with_false_4(0b10111111111111111111111111111111);
+			{false,31,1} : create_with_false_4(0b01111111111111111111111111111111);
 		}
 	}
 
@@ -507,6 +1285,78 @@ Hash<bit<32>>(HashAlgorithm_t.IDENTITY) identity_hash;
 		}
 	}
 
+	action set_disj_map_2_true(){
+		ig_md.disj_2 = true;
+    }
+
+	action set_disj_map_2_false(){
+        ig_md.disj_2 = false;
+    }
+	
+	table check_disj_map_2{
+		actions = {
+			set_disj_map_2_true;
+			set_disj_map_2_false;
+		}
+		key = {
+			ig_md.disj_map_2: exact;
+
+		}
+		size = 1;
+		const default_action = set_disj_map_2_true;
+		const entries = {
+			{0} : set_disj_map_2_false();
+		}
+	}
+
+	action set_disj_map_3_true(){
+		ig_md.disj_3 = true;
+    }
+
+	action set_disj_map_3_false(){
+        ig_md.disj_3 = false;
+    }
+	
+	table check_disj_map_3{
+		actions = {
+			set_disj_map_3_true;
+			set_disj_map_3_false;
+		}
+		key = {
+			ig_md.disj_map_3: exact;
+
+		}
+		size = 1;
+		const default_action = set_disj_map_3_true;
+		const entries = {
+			{0} : set_disj_map_3_false();
+		}
+	}
+
+	action set_disj_map_4_true(){
+		ig_md.disj_4 = true;
+    }
+
+	action set_disj_map_4_false(){
+        ig_md.disj_4 = false;
+    }
+	
+	table check_disj_map_4{
+		actions = {
+			set_disj_map_4_true;
+			set_disj_map_4_false;
+		}
+		key = {
+			ig_md.disj_map_4: exact;
+
+		}
+		size = 1;
+		const default_action = set_disj_map_4_true;
+		const entries = {
+			{0} : set_disj_map_4_false();
+		}
+	}
+
 
 
     action store_disj_1_true() {
@@ -532,6 +1382,75 @@ Hash<bit<32>>(HashAlgorithm_t.IDENTITY) identity_hash;
 		}
 	}
 
+    action store_disj_2_true() {
+		ig_md.disj_map_2 = set_disj_map_2_register_true.execute(ig_md.conj_value_2);
+	}
+
+    action store_disj_2_false() {
+		ig_md.disj_map_2 = set_disj_map_2_register_false.execute(ig_md.conj_value_2);
+	}
+
+	table store_disj_map_2{
+		actions = {
+			store_disj_2_true;
+			store_disj_2_false;
+		}
+		key = {
+			ig_md.disj_2 : exact;
+		}
+		size = 2;
+		const entries = {
+			{true} : store_disj_2_true();
+			{false} : store_disj_2_false();
+		}
+	}
+
+    action store_disj_3_true() {
+		ig_md.disj_map_3 = set_disj_map_3_register_true.execute(ig_md.conj_value_3);
+	}
+
+    action store_disj_3_false() {
+		ig_md.disj_map_3 = set_disj_map_3_register_false.execute(ig_md.conj_value_3);
+	}
+
+	table store_disj_map_3{
+		actions = {
+			store_disj_3_true;
+			store_disj_3_false;
+		}
+		key = {
+			ig_md.disj_3 : exact;
+		}
+		size = 2;
+		const entries = {
+			{true} : store_disj_3_true();
+			{false} : store_disj_3_false();
+		}
+	}
+
+    action store_disj_4_true() {
+		ig_md.disj_map_4 = set_disj_map_4_register_true.execute(ig_md.conj_value_4);
+	}
+
+    action store_disj_4_false() {
+		ig_md.disj_map_4 = set_disj_map_4_register_false.execute(ig_md.conj_value_4);
+	}
+
+	table store_disj_map_4{
+		actions = {
+			store_disj_4_true;
+			store_disj_4_false;
+		}
+		key = {
+			ig_md.disj_4 : exact;
+		}
+		size = 2;
+		const entries = {
+			{true} : store_disj_4_true();
+			{false} : store_disj_4_false();
+		}
+	}
+
 
 	action sum_conj_set_true(){
         ig_md.summed_conj = true;
@@ -548,13 +1467,16 @@ Hash<bit<32>>(HashAlgorithm_t.IDENTITY) identity_hash;
 		}
 		key = {
 			ig_md.disj_1: exact;
+			ig_md.disj_2: exact;
+			ig_md.disj_3: exact;
+			ig_md.disj_4: exact;
 
 
 		}
 		size = 1;
 		const default_action = sum_conj_set_false;
 		const entries = {
-			{true} : sum_conj_set_true();
+			{true,true,true,true} : sum_conj_set_true();
 		}
 	}
 
@@ -575,12 +1497,21 @@ Hash<bit<32>>(HashAlgorithm_t.IDENTITY) identity_hash;
 
 			
 			conj_table_1.apply();
+			conj_table_2.apply();
+			conj_table_3.apply();
+			conj_table_4.apply();
 
 
 			assign_data.apply();
 		
 			subtract_table_1.apply();
 			subtract_table_upper_1.apply();
+			subtract_table_2.apply();
+			subtract_table_upper_2.apply();
+			subtract_table_3.apply();
+			subtract_table_upper_3.apply();
+			subtract_table_4.apply();
+			subtract_table_upper_4.apply();
 
 		
 
@@ -607,16 +1538,103 @@ Hash<bit<32>>(HashAlgorithm_t.IDENTITY) identity_hash;
             }
                 
     
+            if(ig_md.disj_op_2 == 1 || ig_md.disj_op_2 == 5)
+            {
+                eval_greater_disj_2.apply();
+                
+            }
+            else if(ig_md.disj_op_2 == 2)
+            {
+                eval_smaller_disj_2.apply();
+            }
+            else if(ig_md.disj_op_2 == 3 || ig_md.disj_op_2 == 0)
+            {
+                eval_equal_disj_2.apply();
+            }
+            else if(ig_md.disj_op_2 == 4)
+            {
+                eval_not_equal_disj_2.apply();
+            }
+            if(ig_md.disj_op_2 == 5 && ig_md.disj_2)
+            {
+            eval_range_disj_2.apply();
+            }
+                
+    
+            if(ig_md.disj_op_3 == 1 || ig_md.disj_op_3 == 5)
+            {
+                eval_greater_disj_3.apply();
+                
+            }
+            else if(ig_md.disj_op_3 == 2)
+            {
+                eval_smaller_disj_3.apply();
+            }
+            else if(ig_md.disj_op_3 == 3 || ig_md.disj_op_3 == 0)
+            {
+                eval_equal_disj_3.apply();
+            }
+            else if(ig_md.disj_op_3 == 4)
+            {
+                eval_not_equal_disj_3.apply();
+            }
+            if(ig_md.disj_op_3 == 5 && ig_md.disj_3)
+            {
+            eval_range_disj_3.apply();
+            }
+                
+    
+            if(ig_md.disj_op_4 == 1 || ig_md.disj_op_4 == 5)
+            {
+                eval_greater_disj_4.apply();
+                
+            }
+            else if(ig_md.disj_op_4 == 2)
+            {
+                eval_smaller_disj_4.apply();
+            }
+            else if(ig_md.disj_op_4 == 3 || ig_md.disj_op_4 == 0)
+            {
+                eval_equal_disj_4.apply();
+            }
+            else if(ig_md.disj_op_4 == 4)
+            {
+                eval_not_equal_disj_4.apply();
+            }
+            if(ig_md.disj_op_4 == 5 && ig_md.disj_4)
+            {
+            eval_range_disj_4.apply();
+            }
+                
+    
 			
 
                 if(ig_md.disj_op_1 != 0){
                     create_new_map_1.apply();
                 }
 
+                if(ig_md.disj_op_2 != 0){
+                    create_new_map_2.apply();
+                }
+
+                if(ig_md.disj_op_3 != 0){
+                    create_new_map_3.apply();
+                }
+
+                if(ig_md.disj_op_4 != 0){
+                    create_new_map_4.apply();
+                }
+
 
                store_disj_map_1.apply();
+               store_disj_map_2.apply();
+               store_disj_map_3.apply();
+               store_disj_map_4.apply();
 
 			check_disj_map_1.apply();
+			check_disj_map_2.apply();
+			check_disj_map_3.apply();
+			check_disj_map_4.apply();
 
 			//check_disj_map_3.apply();
 			sum_conj.apply();
